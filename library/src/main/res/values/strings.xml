@@ -1,0 +1,14 @@
+<resources>
+    <string name="library_name">App Update Center</string>
+    <string name="use_app_info">To use this app ,download the latest version</string>
+    <string name="update">update</string>
+    <string name="no_thanks">No thanks</string>
+    <string name="need_update">{0} needs an update</string>
+    <string name="download_install">Downloading and installing</string>
+    <string name="ask_update">Update {0}?</string>
+    <string name="n_title">App is Downloaded.</string>
+    <string name="n_message">Tap update for installing latest version</string>
+    <string name="foreground_title">App Update Center</string>
+    <string name="foreground_description">Updating your app to latest version</string>
+    <string name="app_update_info">{0} recommends that you update to the latest version. You can use app while downloading the update.</string>
+</resources>
