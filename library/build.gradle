@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
+    id 'maven-publish'
 }
 
 android {
@@ -34,6 +35,13 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -50,4 +58,18 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
     implementation 'com.github.bumptech.glide:glide:4.15.1'
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.rahul-mobiledev'
+            artifactId = 'appcenter-library'
+            version = '1.0.2'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
 }
