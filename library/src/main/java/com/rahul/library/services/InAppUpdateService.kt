@@ -8,9 +8,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.IBinder
-import com.rahul.library.managers.InAppUpdate
+import com.rahul.library.managers.AppUpdateCenter
 import com.rahul.library.managers.NotificationManager
-import com.rahul.library.network.Response
+import com.rahul.library.network.UpdateResponse
 import com.rahul.library.utils.installApp
 
 class InAppUpdateService : Service() {
@@ -19,7 +19,7 @@ class InAppUpdateService : Service() {
     private val downloadManager by lazy {
         getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
     }
-    private lateinit var data: Response
+    private lateinit var data: UpdateResponse
 
     private val onCompleteReceiverFlexible by lazy {
         object : BroadcastReceiver() {
@@ -27,8 +27,8 @@ class InAppUpdateService : Service() {
                 val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1) ?: -1
                 if (id == downloadId) {
                     val file = downloadManager.getUriForDownloadedFile(id)
-                    val intent = installApp(file)
-                    NotificationManager.getInstance().sendNotification(intent)
+                    val i = installApp(file)
+                    NotificationManager.getInstance().sendNotification(i)
                     context?.unregisterReceiver(this)
                 }
             }
@@ -47,7 +47,7 @@ class InAppUpdateService : Service() {
     }
 
     private fun startProcess(intent: Intent) {
-        data = intent.getParcelableExtra(InAppUpdate.APP)!!
+        data = intent.getParcelableExtra(AppUpdateCenter.APP)!!
         startForeground(
             FOREGROUND_ID,
             NotificationManager.getInstance().getForegroundNotification()
@@ -66,13 +66,15 @@ class InAppUpdateService : Service() {
     }
 
     private fun download() {
-        downloadId = downloadManager.enqueue(
-            DownloadManager.Request(Uri.parse(data.apkUrl))
-                .setDestinationInExternalFilesDir(
-                    this, "apps", "app.apk"
-                )
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
-        )
+        data.activeRelease?.apkUrl?.let { url ->
+            downloadId = downloadManager.enqueue(
+                DownloadManager.Request(Uri.parse(url))
+                    .setDestinationInExternalFilesDir(
+                        this, "apps", "app.apk"
+                    )
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+            )
+        }
     }
 
 

@@ -5,7 +5,14 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Response(
+data class UpdateResponse(
+    val app: String,
+    @SerializedName("active_release")
+    val activeRelease: ActiveRelease?
+) : Parcelable
+
+@Parcelize
+data class ActiveRelease(
     val name: String,
     val code: Int,
     val apkUrl: String,

@@ -9,10 +9,11 @@
         android:id="@+id/app_update_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
         android:fontFamily="sans-serif-condensed-medium"
         android:text="@string/ask_update"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/app_info"
@@ -22,7 +23,18 @@
         android:fontFamily="sans-serif-medium"
         android:text="@string/app_update_info"
         android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/app_update_title"
         app:layout_constraintTop_toBottomOf="@id/app_update_title" />
+
+    <TextView
+        android:id="@+id/version_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/version_info"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/app_info"
+        app:layout_constraintTop_toBottomOf="@id/app_info" />
 
     <Button
         android:id="@+id/update"
@@ -34,7 +46,7 @@
         android:textAllCaps="true"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/app_info" />
+        app:layout_constraintTop_toBottomOf="@id/version_info" />
 
     <Button
         android:id="@+id/cancel"
@@ -57,6 +69,8 @@
         android:layout_marginTop="12dp"
         android:alpha="0.1"
         android:background="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/update" />
 
     <TextView

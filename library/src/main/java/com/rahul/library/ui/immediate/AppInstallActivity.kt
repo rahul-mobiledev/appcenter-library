@@ -9,13 +9,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.rahul.library.R
-import com.rahul.library.managers.InAppUpdate
-import com.rahul.library.network.Response
+import com.rahul.library.managers.AppUpdateCenter
+import com.rahul.library.network.UpdateResponse
 import com.rahul.library.services.InAppUpdateService
 import com.rahul.library.utils.installApp
 
 class AppInstallActivity : AppCompatActivity() {
-    private lateinit var data: Response
+    private lateinit var data: UpdateResponse
     private val downloadManager: DownloadManager by lazy {
         getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
     }
@@ -25,8 +25,8 @@ class AppInstallActivity : AppCompatActivity() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1) ?: -1
                 val file = downloadManager.getUriForDownloadedFile(id)
-                val intent = installApp(file)
-                startActivity(intent)
+                val i = installApp(file)
+                startActivity(i)
                 context?.unregisterReceiver(this)
 
             }
@@ -41,9 +41,9 @@ class AppInstallActivity : AppCompatActivity() {
     }
 
     private fun setData() {
-        data = intent.getParcelableExtra(InAppUpdate.APP)!!
+        data = intent.getParcelableExtra(AppUpdateCenter.APP)!!
         startService(Intent(this, InAppUpdateService::class.java).apply {
-            putExtra(InAppUpdate.APP, this@AppInstallActivity.data)
+            putExtra(AppUpdateCenter.APP, this@AppInstallActivity.data)
         })
         registerReceiver(
             onCompleteReceiverImmediate,

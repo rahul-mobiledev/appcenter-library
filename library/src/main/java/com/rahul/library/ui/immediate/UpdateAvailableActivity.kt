@@ -7,12 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.rahul.library.R
-import com.rahul.library.managers.InAppUpdate
-import com.rahul.library.network.Response
+import com.rahul.library.managers.AppUpdateCenter
+import com.rahul.library.network.UpdateResponse
 import com.rahul.library.utils.getArgumentedText
 
 class UpdateAvailableActivity : AppCompatActivity() {
-    private lateinit var data: Response
+    private lateinit var data: UpdateResponse
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_immediate_update)
@@ -21,12 +21,12 @@ class UpdateAvailableActivity : AppCompatActivity() {
     }
 
     private fun setData() {
-        data = intent.getParcelableExtra(InAppUpdate.APP)!!
+        data = intent.getParcelableExtra(AppUpdateCenter.APP)!!
     }
 
     private fun setupViews() {
         findViewById<TextView>(R.id.app_update_info).text =
-            getArgumentedText(R.string.need_update, data.name)
+            getArgumentedText(R.string.need_update, data.app)
         findViewById<ImageView>(R.id.exit).setOnClickListener {
             exitApp()
         }
@@ -36,7 +36,7 @@ class UpdateAvailableActivity : AppCompatActivity() {
                     this@UpdateAvailableActivity,
                     AppInstallActivity::class.java
                 ).apply {
-                    putExtra(InAppUpdate.APP, this@UpdateAvailableActivity.data)
+                    putExtra(AppUpdateCenter.APP, this@UpdateAvailableActivity.data)
                 }
             )
             finish()

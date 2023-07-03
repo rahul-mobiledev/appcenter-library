@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import com.rahul.library.BuildConfig
 import com.rahul.library.callbacks.AppUpdateCallback
-import com.rahul.library.network.Response
 import com.rahul.library.network.Service
+import com.rahul.library.network.UpdateResponse
 import com.rahul.library.network.UpdateType
 import com.rahul.library.ui.flexible.FlexibleUpdateDialog
 import com.rahul.library.ui.immediate.UpdateAvailableActivity
@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
-class InAppUpdate {
+class AppUpdateCenter {
     private lateinit var apiKey: String
     private lateinit var callback: AppUpdateCallback
     private lateinit var context: Context
@@ -40,7 +40,7 @@ class InAppUpdate {
         .build()
         .create(Service::class.java)
 
-    fun setApiKey(context: Context, apiKey: String): InAppUpdate {
+    fun setApiKey(context: Context, apiKey: String): AppUpdateCenter {
         this.apiKey = apiKey
         this.context = context
         versionCode = context.packageManager.getPackageInfo(context.packageName, 0).versionCode
@@ -57,22 +57,22 @@ class InAppUpdate {
         if (!this::apiKey.isInitialized) {
             throw Exception("You must set Api key with InAppUpdate.getInstance().setApiKey() before listen()")
         }
-        service.getLatestVersion(apiKey).enqueue(object : Callback<Response> {
+        service.getLatestVersion(apiKey).enqueue(object : Callback<UpdateResponse> {
             override fun onResponse(
-                call: Call<Response>,
-                response: retrofit2.Response<Response>
+                call: Call<UpdateResponse>,
+                response: retrofit2.Response<UpdateResponse>
             ) {
                 val data = response.body()
                 checkForUpdates(data)
             }
 
-            override fun onFailure(call: Call<Response>, t: Throwable) {
+            override fun onFailure(call: Call<UpdateResponse>, t: Throwable) {
                 throw t
             }
         })
     }
 
-    private fun checkForUpdates(data: Response?) {
+    private fun checkForUpdates(data: UpdateResponse?) {
         data?.let {
             if (it.isUpdateAvailable()) {
                 installUpdate(it)
@@ -81,33 +81,39 @@ class InAppUpdate {
         callback.onFinishCheckForUpdate()
     }
 
-    private fun installUpdate(data: Response) {
-        when (data.type) {
-            UpdateType.IMMEDIATE -> {
-                context.startActivity(Intent(context, UpdateAvailableActivity::class.java).apply {
-                    putExtra(APP, data)
-                })
-            }
+    private fun installUpdate(data: UpdateResponse) {
+        data.activeRelease?.let {
+            when (it.type) {
+                UpdateType.IMMEDIATE -> {
+                    context.startActivity(
+                        Intent(
+                            context,
+                            UpdateAvailableActivity::class.java
+                        ).apply {
+                            putExtra(APP, data)
+                        })
+                }
 
-            UpdateType.FLEXIBLE -> {
-                FlexibleUpdateDialog(context, data)
+                UpdateType.FLEXIBLE -> {
+                    FlexibleUpdateDialog(context, data)
+                }
             }
         }
-
     }
 
-    private fun Response.isUpdateAvailable() = code > versionCode
+    private fun UpdateResponse.isUpdateAvailable() =
+        (activeRelease?.code ?: versionCode) > versionCode
 
     companion object {
-        private lateinit var instance: InAppUpdate
+        private lateinit var instance: AppUpdateCenter
         fun getInstance() =
             if (this::instance.isInitialized) {
                 instance
             } else {
-                instance = InAppUpdate()
+                instance = AppUpdateCenter()
                 instance
             }
 
-        const val APP = "android.rahul.app.model"
+        const val APP = "android.rahul.app.update.model.response"
     }
 }
