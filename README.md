@@ -26,7 +26,7 @@ dependencies {
 ### Step 3: Initialize the UpdateManager
 Initialize the UpdateManager in your `onCreate` method of the Activity
 ```kotlin
-    // Initialize the Update Manager with the Activity and the Update Mode
+    // Initialize the App Update Center with the Activity and the API key
      AppUpdateCenter.getInstance()
             .setApiKey(this@MainActivity, "64a27c4d5f91b851c3f609e9")
             .listen(object : AppUpdateCallback {
